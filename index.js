@@ -83,11 +83,10 @@ function requestBirthday() {
 }
 
 function makeRequest(request) {
-  console.log(request)
-  return
-
-  $.ajax({
-    url: request
+  var promise = $.ajax({
+    url: 'http://localhost:8000' + request
   })
-  //.then...
+
+  promise.done(function(data) { console.log(data) });
+  promise.fail(function(err) { console.log('An error occure while reading weather data:' + err)});
 }
