@@ -39,11 +39,17 @@ function handleGravatar(req, res) {
 }
 
 function handleSquare(req, res) {
-  res.end('res Square')
+  console.log('r=' + req.url)
+  var num = req.url.slice('/Squarl/'.length)
+  res.end('res Square' + num*num)
 }
 
 function handleSum(req, res) {
-  res.end('res Sum')
+  var num = req.url.slice('/sum/'.length).split('/')
+  var result = num.reduce(function(running, cur, index, arr) {
+    return running += (cur*1)
+  },0)
+  res.end('res Sum' + result)
 }
 
 function handleSentence(req, res) {
