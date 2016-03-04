@@ -1,8 +1,9 @@
 'use strict'
 
 const PORT = 8000
-
+var md5 = require('md5')
 var http = require('http');
+var jquery = require('./jquery.js') // Remove this
 
 var server = http.createServer(function(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -24,32 +25,37 @@ var server = http.createServer(function(req, res) {
     res.status(404)
     res.end()
   }
-  // /gravatar/c@codinghouse.co
-  // /math/square/5  =>  25
-  // /sentence/A%20Sentence%20here
-  // /birthday/12/26/1986
-  console.log('request is: ' + req);
-
-  //res.writeHead(200);
-  //res.end('Hello Http');
 });
 
 function handleGravatar(req, res) {
-  res.end('res Gravatar')
+  var gravatarEmail = req.url.slice('/gravatar/'.length)
+  var md5Email = md5(gravatarEmail)
+  getGravatar(md5Email, req, res)
+}
+
+function getGravatar(md5Email, req, res) {
+  // This need to be vanilla JS not jquery
+  var promise = $.ajax({
+    url: 'http://www.gravatar.com/avatar/' + md5Email
+  })
+
+  promise.done(function(data, req, res) {
+    res.end(data)
+  });
+  promise.fail(function(err) { console.log('An error occure while reading weather data:' + err)});
 }
 
 function handleSquare(req, res) {
-  console.log('r=' + req.url)
   var num = req.url.slice('/Squarl/'.length)
-  res.end('res Square' + num*num)
+  res.end(num * num)
 }
 
 function handleSum(req, res) {
   var num = req.url.slice('/sum/'.length).split('/')
   var result = num.reduce(function(running, cur, index, arr) {
-    return running += (cur*1)
-  },0)
-  res.end('res Sum' + result)
+    return running += (cur * 1)
+  }, 0)
+  res.end(result)
 }
 
 function handleSentence(req, res) {
@@ -60,34 +66,4 @@ function handleBirthday(req, res) {
   res.end('res Birthday')
 }
 
-
 server.listen(PORT);
-console.log('Started on port: ' + PORT);
-
-/*
-// Given an email like this, respond w/a gravatar
-/gravatar/c@codinghouse.co
-
-// Convert the email into an md5 hash then call this:
-// https://www.npmjs.com/package/md5
-var curl ="http://www.gravatar.com/avatar/[HASH]"
-// Cades looks like this:
-// http://www.gravatar.com/avatar/c417050fa67e3d2e9b690636c2ce80ec
-
-///////////////////////////
-// Math api
-/math/square/5  =>  25
-/math/sum/3/3/3  => 9
-
-////////////////////
-//
-/sentence/A%20Sentence%20here
-
-///////////////
-// Birthday info
-// Use moment.js
- /birthday/12/26/1986
-
- /// Front end port localhost:3000
- // node port localhost:8000
-*/

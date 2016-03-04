@@ -87,6 +87,6 @@ function makeRequest(request) {
     url: 'http://localhost:8000' + request
   })
 
-  promise.done(function(data) { console.log(data) });
+  promise.done(function(data) { console.log(alert('result is:' + data)) });
   promise.fail(function(err) { console.log('An error occure while reading weather data:' + err)});
 }
